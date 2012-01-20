@@ -10,9 +10,9 @@
 	<version>SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>osmrmhv</name>
-	<description>osmrmhv library</description>
-	<url>http://gitorious.org/osmrmhv</url>
+	<name>fosmhv</name>
+	<description>fosmhv library</description>
+	<url>https://github.com/andrewharvey/fosmhv</url>
 
 	<licenses>
 		<license>
@@ -31,37 +31,17 @@
 				<xmpp>cdauth@cdauth.eu</xmpp>
 			</properties>
 		</developer>
+		<developer>
+			<id>aharvey</id>
+			<name>AndrewHarvey</name>
+			<email>andrew.harvey4@gmail.com</email>
+		</developer>
 	</developers>
 
-	<issueManagement>
-		<system>flyspray</system>
-		<url>http://bugs.cdauth.eu/?project=2</url>
-	</issueManagement>
-
-	<ciManagement>
-		<system>hudson</system>
-		<url>http://hudson.cdauth.eu/job/osmrmhv/</url>
-	</ciManagement>
-
-	<distributionManagement>
-		<repository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>cdauth-versioned</id>
-			<url>sftp://cdauth.eu/srv/maven/versioned</url>
-			<layout>default</layout>
-		</repository>
-		<snapshotRepository>
-			<uniqueVersion>true</uniqueVersion>
-			<id>cdauth-snapshot</id>
-			<url>scpexe://cdauth.eu/srv/maven/snapshot</url>
-			<layout>legacy</layout>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<scm>
-		<connection>scm:git:git://gitorious.org/osmrmhv/lib.git</connection>
-		<developerConnection>scm:git:git@gitorious.org:osmrmhv/lib.git</developerConnection>
-		<url>http://gitorious.org/osmrmhv/lib</url>
+		<connection>scm:git:git://github.com/andrewharvey/fosmhv.git</connection>
+		<developerConnection>scm:git:git@github.com:andrewharvey/fosmhv.git</developerConnection>
+		<url>http://github.com/andrewharvey/fosmhv</url>
 	</scm>
 
 	<properties>
