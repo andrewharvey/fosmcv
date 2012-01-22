@@ -43,10 +43,10 @@ h1,h2,h3,h4,h5,h6 { clear:left; }
 #switch-lang { margin:0; padding:.3em; position:absolute; top:0; right:0; list-style-type:none; }
 #switch-lang li { margin:0; padding:0; }
 
-.changed-object-tags li table { display:none; }
+.changed-object-tags li table { display:block; }
 * html .changed-object-tags li table { display:block; }
 .changed-object-tags li:hover table { display:table; }
-* html .changed-object-tags-note { display:none; }
+* html .changed-object-tags-note { display:block; }
 .changed-object-tags td.old { background-color:#fcc; }
 .changed-object-tags td.new { background-color:#cfc; }
 .changed-object-tags td.unchanged { color:#666; font-style:italic; }
