@@ -49,8 +49,10 @@ import eu.cdauth.osm.lib.Item;
 
 public class API06API implements API
 {
-	protected static final String API_SERVER = "api.openstreetmap.org";
-	protected static final int API_PORT = 80;
+	protected static final String FOSM_API_SERVER = "api.fosm.org";
+	protected static final int FOSM_API_PORT = 80;
+	protected static final String OSM_API_SERVER = "api.openstreetmap.org";
+	protected static final int OSM_API_PORT = 80;
 	protected static final String API_PREFIX = "/api/0.6";
 
 	private static Logger sm_logger = Logger.getLogger(API06API.class.getName());
@@ -76,12 +78,21 @@ public class API06API implements API
 	}
 	
 	/**
-	 * Returns the full API URL where a request like <code>/node/1</code> can be appended.
-	 * @return The full API URL.
+	 * Returns the full FOSM API URL where a request like <code>/node/1</code> can be appended.
+	 * @return The full FOSM API URL.
 	 */
-	protected static String getAPIPrefix()
+	protected static String getFOSMAPIPrefix()
 	{
-		return "http://"+API_SERVER+":"+API_PORT+API_PREFIX;
+		return "http://"+FOSM_API_SERVER+":"+FOSM_API_PORT+API_PREFIX;
+	}
+	
+	/**
+	 * Returns the full OSM API URL where a request like <code>/node/1</code> can be appended.
+	 * @return The full OSM API URL.
+	 */
+	protected static String getOSMAPIPrefix()
+	{
+		return "http://"+OSM_API_SERVER+":"+OSM_API_PORT+API_PREFIX;
 	}
 
 	/**
@@ -92,22 +103,39 @@ public class API06API implements API
 	 */
 	protected Element fetch(String a_url) throws APIError
 	{
-		String url = getAPIPrefix()+a_url;
+		String fosm_url = getFOSMAPIPrefix()+a_url;
+		String osm_url = getOSMAPIPrefix()+a_url;
 		try
 		{
 			if(sm_logger.isLoggable(Level.FINE))
-				sm_logger.fine(url);
+				sm_logger.fine(fosm_url);
 
-			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+			HttpURLConnection connection;
+			
+			connection = (HttpURLConnection) new URL(fosm_url).openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("User-Agent", getUserAgent());
 			connection.setRequestProperty("Accept-Encoding", "gzip");
 			System.out.println("API call "+connection.getURL().toString());
 			connection.connect();
-	
-			if(connection.getResponseCode() != 200)
-				throw new APIError("ResponseCode is "+connection.getResponseCode()+" for URL "+url+".");
+			
+			// go looking at OSM instead
+			if(connection.getResponseCode() == 410) {
+				connection = (HttpURLConnection) new URL(osm_url).openConnection();
+				connection.setRequestMethod("GET");
+				connection.setRequestProperty("User-Agent", getUserAgent());
+				connection.setRequestProperty("Accept-Encoding", "gzip");
+				System.out.println("API call "+connection.getURL().toString());
+				connection.connect();
+				
+				if(connection.getResponseCode() != 200)
+					throw new APIError("ResponseCode is "+connection.getResponseCode()+" for URL "+osm_url+".");
 
+			} else {
+				if(connection.getResponseCode() != 200)
+					throw new APIError("ResponseCode is "+connection.getResponseCode()+" for URL "+fosm_url+".");
+			}
+	
 			InputStream in = connection.getInputStream();
 			String encoding = connection.getContentEncoding();
 			if("gzip".equalsIgnoreCase(encoding))
@@ -131,15 +159,15 @@ public class API06API implements API
 		}
 		catch(IOException e)
 		{
-			throw new APIError("Error fetching data from URL "+url, e);
+			throw new APIError("Error fetching data from URL "+fosm_url, e);
 		}
 		catch(SAXException e)
 		{
-			throw new APIError("Error fetching data from URL "+url, e);
+			throw new APIError("Error fetching data from URL "+fosm_url, e);
 		}
 		catch(ParserConfigurationException e)
 		{
-			throw new APIError("Error fetching data from URL "+url, e);
+			throw new APIError("Error fetching data from URL "+fosm_url, e);
 		}
 	}
 	
