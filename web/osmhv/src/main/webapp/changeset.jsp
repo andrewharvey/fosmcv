@@ -250,8 +250,13 @@
 <div id="map"></div>
 <script type="text/javascript">
 // <![CDATA[
-	var map = new FacilMap.Map("map");
-	map.addAllAvailableLayers();
+	var map = new OpenLayers.Map("map");
+
+	map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+	var osm = new OpenLayers.Layer.OSM("OpenStreetMap.org Mapnik");
+	var fosm = new OpenLayers.Layer.OSM("FOSM Mapnik", "/tiles/fosm/mapnik/${z}/${x}/${y}.png");
+	map.addLayers([osm, fosm]);
 
 	window.onresize = function(){ document.getElementById("map").style.height = Math.round(window.innerHeight*.9)+"px"; map.updateSize(); };
 	window.onresize();
@@ -259,16 +264,6 @@
 	var styleMapUnchanged = new OpenLayers.StyleMap({strokeColor: "#0000ff", strokeWidth: 3, strokeOpacity: 0.3});
 	var styleMapCreated = new OpenLayers.StyleMap({strokeColor: "#44ff44", strokeWidth: 3, strokeOpacity: 0.5});
 	var styleMapRemoved = new OpenLayers.StyleMap({strokeColor: "#ff0000", strokeWidth: 3, strokeOpacity: 0.5});
-
-	var osbLayer = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { shortName: "osb", visibility: false });
-	map.addLayer(osbLayer);
-	osbLayer.setZIndex(500);
-
-	var layerMarkers = new FacilMap.Layer.Markers.LonLat("Markers", { shortName: "m" });
-	map.addLayer(layerMarkers);
-	var clickControl = new FacilMap.Control.CreateMarker(layerMarkers);
-	map.addControl(clickControl);
-	clickControl.activate();
 
 	var projection = new OpenLayers.Projection("EPSG:4326");
 	var layerCreated = new OpenLayers.Layer.PointTrack("(Created)", {
@@ -289,6 +284,34 @@
 		zoomableInLayerSwitcher: true,
 		shortName: "unchanged"
 	});
+
+	var layerCreatedNodes = new OpenLayers.Layer.Markers("(Created Nodes)", {
+		styleMap: styleMapCreated,
+		projection: projection,
+		zoomableInLayerSwitcher: true,
+		shortName: "createdNodes"
+	});
+	var layerRemovedNodes = new OpenLayers.Layer.Markers("(Removed Nodes)", {
+		styleMap: styleMapRemoved,
+		projection: projection,
+		zoomableInLayerSwitcher: true,
+		shortName: "removedNodes"
+	});
+	var layerUnchangedNodes = new OpenLayers.Layer.Markers("(Unchanged Nodes)", {
+		styleMap: styleMapUnchanged,
+		projection: projection,
+		zoomableInLayerSwitcher: true,
+		shortName: "unchangedNodes"
+	});
+	var addNodeIcon = new OpenLayers.Icon("/img/markers/33/dark/add.png", 
+		new OpenLayers.Size(31,33), 
+		new OpenLayers.Pixel(-10, 30));
+	var modifyNodeIcon = new OpenLayers.Icon("/img/markers/33/dark/modify.png", 
+		new OpenLayers.Size(31,33), 
+		new OpenLayers.Pixel(-10, 30));
+	var removeNodeIcon = new OpenLayers.Icon("/img/markers/33/dark/remove.png", 
+		new OpenLayers.Size(31,33), 
+		new OpenLayers.Pixel(-10, 30));
 <%
 				for(Segment segment : changes.removed)
 				{
@@ -312,27 +335,61 @@
 				}
 %>
 
+<%
+				for(Node node : changes.removedNodes)
+				{
+%>
+	layerRemovedNodes.addMarker(
+		new OpenLayers.LonLat(<%=node.getLonLat().getLon()%>, <%=node.getLonLat().getLat()%>).transform(projection, map.getProjectionObject()),
+		removeNodeIcon
+	);
+<%
+				}
+
+				for(Node node : changes.createdNodes)
+				{
+%>
+	layerCreatedNodes.addMarker(
+		new OpenLayers.LonLat(<%=node.getLonLat().getLon()%>, <%=node.getLonLat().getLat()%>).transform(projection, map.getProjectionObject()),
+		addNodeIcon
+	);
+<%
+				}
+
+				for(Node node : changes.unchangedNodes)
+				{
+%>
+	layerUnchangedNodes.addMarker(
+		new OpenLayers.LonLat(<%=node.getLonLat().getLon()%>, <%=node.getLonLat().getLat()%>).transform(projection, map.getProjectionObject()),
+		modifyNodeIcon
+	);
+<%
+				}
+%>
+
 	map.addLayer(layerUnchanged);
 	map.addLayer(layerRemoved);
 	map.addLayer(layerCreated);
 
-	var extent1 = layerCreated.getDataExtent();
-	var extent2 = layerRemoved.getDataExtent();
-	var extent3 = layerUnchanged.getDataExtent();
+	map.addLayer(layerUnchangedNodes);
+	map.addLayer(layerRemovedNodes);
+	map.addLayer(layerCreatedNodes);
 
-	var extent = extent1;
+	var extent = layerCreated.getDataExtent() ||
+		layerRemoved.getDataExtent() ||
+		layerUnchanged.getDataExtent() ||
+		layerCreatedNodes.getDataExtent() ||
+		layerRemovedNodes.getDataExtent() ||
+		layerUnchangedNodes.getDataExtent();
+
 	if(extent)
 	{
-		extent.extend(extent2);
-		extent.extend(extent3);
-	}
-	else
-	{
-		extent = extent2;
-		if(extent)
-			extent.extend(extent3);
-		else
-			extent = extent3;
+		extent.extend(layerCreated.getDataExtent());
+		extent.extend(layerRemoved.getDataExtent());
+		extent.extend(layerUnchanged.getDataExtent());
+		extent.extend(layerCreatedNodes.getDataExtent());
+		extent.extend(layerRemovedNodes.getDataExtent());
+		extent.extend(layerUnchangedNodes.getDataExtent());
 	}
 
 	if(extent)
@@ -340,9 +397,6 @@
 	else
 		map.zoomToMaxExtent();
 
-	var hashHandler = new FacilMap.Control.URLHashHandler();
-	map.addControl(hashHandler);
-	hashHandler.activate();
 // ]]>
 </script>
 <%

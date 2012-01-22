@@ -242,21 +242,15 @@
 </div>
 <script type="text/javascript">
 // <![CDATA[
-	var map = new FacilMap.Map("map");
-	map.addAllAvailableLayers();
+	var map = new OpenLayers.Map("map");
+
+	map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+	var osm = new OpenLayers.Layer.OSM("OpenStreetMap.org Mapnik");
+	map.addLayer(osm);
 
 	window.onresize = function(){ document.getElementById("map").style.height = Math.round(window.innerHeight*.9)+"px"; map.updateSize(); }
 	window.onresize();
-
-	var osbLayer = new OpenLayers.Layer.OpenStreetBugs("OpenStreetBugs", { visibility: false, shortName: "osb" });
-	map.addLayer(osbLayer);
-	osbLayer.setZIndex(500);
-
-	var layerMarkers = new FacilMap.Layer.Markers.LonLat("Markers", { shortName: "m" });
-	map.addLayer(layerMarkers);
-	var clickControl = new FacilMap.Control.CreateMarker(layerMarkers);
-	map.addControl(clickControl);
-	clickControl.activate();
 
 	var projection = new OpenLayers.Projection("EPSG:4326");
 
@@ -290,10 +284,6 @@
 %>
 	if(extent)
 		map.zoomToExtent(extent);
-
-	var hashHandler = new FacilMap.Control.URLHashHandler();
-	map.addControl(hashHandler);
-	hashHandler.activate();
 
 	function setGlobalVisibility(visibility)
 	{
