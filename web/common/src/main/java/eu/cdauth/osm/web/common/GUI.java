@@ -516,7 +516,7 @@ abstract public class GUI
 		out.println("");
 		out.println("\tCopyright © 2010 Candid Dauth");
 		out.println("");
-		out.println("\tObtain the source code from http://gitorious.org/osmrmhv.");
+		out.println("\tObtain the source code from https://github.com/andrewharvey/fosmhv (which was modified from http://gitorious.org/osmrmhv).");
 		out.println("-->");
 		out.println("\t<head>");
 		out.println("\t\t<title>"+htmlspecialchars(getTitle())+"</title>");
@@ -583,8 +583,8 @@ abstract public class GUI
 	{
 		PrintWriter out = m_resp.getWriter();
 		out.println("\t\t\t<hr />");
-		out.println("\t\t\t<p>All geographic data by <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a>, available under <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>.</p>");
-		out.println("\t\t\t<p>This program is free software: you can redistribute it and/or modify it under the terms of the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Get the source code via <a href=\"http://gitorious.org/osmrmhv\">Git</a>.</p>");
+		out.println("\t\t\t<p>All geographic data by <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and <a href=\"http://www.fosm.org/\">fosm</a>, available under <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>.</p>");
+		out.println("\t\t\t<p>This program is free software: you can redistribute it and/or modify it under the terms of the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Get the source code via <a href=\"https://github.com/andrewharvey/fosmhv\">Git</a>.</p>");
 		out.println("\t</body>");
 		out.println("</html>");
 	}
