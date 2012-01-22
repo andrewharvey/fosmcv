@@ -69,6 +69,10 @@ public class ChangesetAnalyser implements Serializable
 	public Segment[] created = null;
 	public Segment[] unchanged = null;
 
+	public Node[] removedNodes = null;
+	public Node[] createdNodes = null;
+	public Node[] unchangedNodes = null;
+
 	public Changeset changeset = null;
 
 	public TagChange[] tagChanges = null;
@@ -221,6 +225,8 @@ public class ChangesetAnalyser implements Serializable
 			Hashtable<ID,Node> nodesCache = new Hashtable<ID,Node>();
 			HashSet<Segment> segmentsOld = new HashSet<Segment>();
 			HashSet<Segment> segmentsNew = new HashSet<Segment>();
+			HashSet<Node> nodesOld = new HashSet<Node>();
+			HashSet<Node> nodesNew = new HashSet<Node>();
 
 			for(VersionedItem obj : changeset.getMemberObjects(Changeset.ChangeType.create))
 			{
@@ -345,9 +351,9 @@ public class ChangesetAnalyser implements Serializable
 
 			// Create one-node entries for node changes
 			for(Node node : nodesRemoved.values())
-				segmentsOld.add(new Segment(node, node));
+				nodesOld.add(node);
 			for(Node node : nodesAdded.values())
-				segmentsNew.add(new Segment(node, node));
+				nodesNew.add(node);
 
 			HashSet<Segment> segmentsUnchanged = new HashSet<Segment>();
 			segmentsUnchanged.addAll(segmentsOld);
@@ -359,6 +365,17 @@ public class ChangesetAnalyser implements Serializable
 			removed = segmentsOld.toArray(new Segment[segmentsOld.size()]);
 			created = segmentsNew.toArray(new Segment[segmentsNew.size()]);
 			unchanged = segmentsUnchanged.toArray(new Segment[segmentsUnchanged.size()]);
+
+			HashSet<Node> nodesUnchanged = new HashSet<Node>();
+			nodesUnchanged.addAll(nodesOld);
+			nodesUnchanged.retainAll(nodesNew);
+
+			nodesOld.removeAll(nodesUnchanged);
+			nodesNew.removeAll(nodesUnchanged);
+
+			removedNodes = nodesOld.toArray(new Node[nodesOld.size()]);
+			createdNodes = nodesNew.toArray(new Node[nodesNew.size()]);
+			unchangedNodes = nodesUnchanged.toArray(new Node[nodesUnchanged.size()]);
 		}
 		catch(Throwable e)
 		{ // Including OutOfMemoryError
