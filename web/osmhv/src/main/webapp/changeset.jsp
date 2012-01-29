@@ -55,16 +55,15 @@
 
 	GUI gui = new GUI(request, response);
 	gui.setTitle(String.format(gui._("Changeset %s"), changesetID.toString()));
+	gui.setStyleSheets(new String[]{
+		"/javascript/leaflet/leaflet.css"
+	});
 	gui.setJavaScripts(new String[]{
-		"/javascript/openlayers/OpenLayers.js"
+		"/javascript/leaflet/leaflet.js"
 	});
 
 	gui.head();
 %>
-<ul>
-	<li><a href="./"><%=htmlspecialchars(gui._("Back to home page"))%></a></li>
-	<li><a href="http://www.openstreetmap.org/browse/changeset/<%=htmlspecialchars(changesetID.toString())%>"><%=htmlspecialchars(gui._("Browse on OpenStreetMap"))%></a></li>
-</ul>
 <noscript><p><strong><%=htmlspecialchars(gui._("Note that many features of this page will not work without JavaScript."))%></strong></p></noscript>
 <%
 	response.getWriter().flush();
@@ -85,7 +84,7 @@
 	if(cacheEntry != null)
 	{
 %>
-<p><%=String.format(htmlspecialchars(gui._("This analysation was created on %s.")), gui.formatDate(cacheEntry == null ? null : cacheEntry.date))%></p>
+
 <%
 	}
 
@@ -108,8 +107,35 @@
 		else
 		{
 %>
-<p class="introduction"><strong><%=htmlspecialchars(gui._("Everything green on this page will show the status after the changeset was committed, red will be the status before, and things displayed in blue haven’t changed."))%></strong></p>
-<h2><%=htmlspecialchars(gui._("Tags"))%></h2>
+<h2><%=htmlspecialchars(gui._("Changeset Details"))%></h2>
+<dl class="details">
+	<dt>id</dt>
+	<dd><%=htmlspecialchars(changesetID.toString())%></dd>
+	<dt>API /</dt>
+	<dd><a href="http://api.fosm.org/api/0.6/changeset/<%=htmlspecialchars(changesetID.toString())%>"><%=htmlspecialchars(gui._("changeset api head"))%></a></dd>
+	<dt>API /download</dt>
+	<dd><a href="http://api.fosm.org/api/0.6/changeset/<%=htmlspecialchars(changesetID.toString())%>/download"><%=htmlspecialchars(gui._("changeset api download"))%></a></dd>
+	<dt><%=htmlspecialchars(gui._("User"))%></dt>
+	<dd><a href="http://www.openstreetmap.org/user/<%=htmlspecialchars(urlencode(changes.changeset.getUser().toString()))%>"><%=htmlspecialchars(changes.changeset.getUser().toString())%></a></dd>
+	<dt><%=htmlspecialchars(gui._("Creation time"))%></dt>
+	<dd><%=htmlspecialchars(changes.changeset.getCreationDate().toString())%></dd>
+	<dt><%=htmlspecialchars(gui._("Closing time"))%></dt>
+<%
+			Date closingDate = changes.changeset.getClosingDate();
+			if(closingDate == null)
+			{
+%>
+	<dd><%=htmlspecialchars(gui._("Still open"))%></dd>
+<%
+			}
+			else
+			{
+%>
+	<dd><%=htmlspecialchars(changes.changeset.getClosingDate().toString())%></dd>
+<%
+			}
+%>
+</dl>
 <dl>
 <%
 			for(Map.Entry<String,String> tag : changes.changeset.getTags().entrySet())
@@ -127,31 +153,6 @@
 				}
 			}
 %>
-</dl>
-<h2><%=htmlspecialchars(gui._("Details"))%></h2>
-<dl>
-	<dt><%=htmlspecialchars(gui._("Creation time"))%></dt>
-	<dd><%=htmlspecialchars(changes.changeset.getCreationDate().toString())%></dd>
-
-	<dt><%=htmlspecialchars(gui._("Closing time"))%></dt>
-<%
-			Date closingDate = changes.changeset.getClosingDate();
-			if(closingDate == null)
-			{
-%>
-	<dd><%=htmlspecialchars(gui._("Still open"))%></dd>
-<%
-			}
-			else
-			{
-%>
-	<dd><%=htmlspecialchars(changes.changeset.getClosingDate().toString())%></dd>
-<%
-			}
-%>
-
-	<dt><%=htmlspecialchars(gui._("User"))%></dt>
-	<dd><a href="http://www.openstreetmap.org/user/<%=htmlspecialchars(urlencode(changes.changeset.getUser().toString()))%>"><%=htmlspecialchars(changes.changeset.getUser().toString())%></a></dd>
 </dl>
 <h2><%=htmlspecialchars(gui._("Changed object tags"))%></h2>
 <%
@@ -188,7 +189,7 @@
 					else
 						continue;
 %>
-	<li><%=htmlspecialchars(type+" "+it.id.toString())%> (<a href="http://www.openstreetmap.org/browse/<%=htmlspecialchars(browse+"/"+it.id.toString())%>"><%=htmlspecialchars(gui._("browse"))%></a>)
+	<li><%=htmlspecialchars(type+" "+it.id.toString())%> <span class="object-links">(<a href="http://www.openstreetmap.org/browse/<%=htmlspecialchars(browse+"/"+it.id.toString())%>"><%=htmlspecialchars(gui._("browse"))%></a>) (<a href="javascript:gotomap('<%=htmlspecialchars(it.id.toString())%>')"><%=htmlspecialchars(gui._("gotomap"))%></a>)</span>
 		<table>
 			<tbody>
 <%
@@ -248,89 +249,108 @@
 			{
 %>
 <div id="map"></div>
+<p class="key">
+	<strong>
+		Key: 
+		<span class="red">before</span> 
+		<span class="green">after</span> 
+		<span class="blue">unchanged</span>
+	</ul>
+	</strong>
+</p>
+<span><a href="/leaflet-side-by-side.html">Inspect fosm/osm as a side-by-side map.</a></span>
 <script type="text/javascript">
 // <![CDATA[
-	var map = new OpenLayers.Map("map");
+	var map = new L.Map("map");
 
-	map.addControl(new OpenLayers.Control.LayerSwitcher());
+	var fosm = new L.TileLayer("/tiles/fosm/mapnik/{z}/{x}/{y}.png",
+		{
+			attribution: 'Map Data &amp; Map Image &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> &amp; <a href="http://www.fosm.org/">FOSM</a> Contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>',
+			maxZoom: 20
+		});
+	map.addLayer(fosm);
 
-	var osm = new OpenLayers.Layer.OSM("OpenStreetMap.org Mapnik");
-	var fosm = new OpenLayers.Layer.OSM("FOSM Mapnik", "/tiles/fosm/mapnik/${z}/${x}/${y}.png");
-	map.addLayers([osm, fosm]);
+	var osm = new L.TileLayer("http://tile.openstreetmap.org/{z}/{x}/{y}.png",
+		{
+			attribution: 'Map Data &amp; Map Image &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> Contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>',
+			maxZoom: 28
+		});
 
-	window.onresize = function(){ document.getElementById("map").style.height = Math.round(window.innerHeight*.9)+"px"; map.updateSize(); };
-	window.onresize();
+//	window.onresize = function(){ document.getElementById("map").style.height = Math.round(window.innerHeight*.9)+"px"; map.updateSize(); };
+//	window.onresize();
 
-	var styleMapUnchanged = new OpenLayers.StyleMap({strokeColor: "#0000ff", strokeWidth: 3, strokeOpacity: 0.3});
-	var styleMapCreated = new OpenLayers.StyleMap({strokeColor: "#44ff44", strokeWidth: 3, strokeOpacity: 0.5});
-	var styleMapRemoved = new OpenLayers.StyleMap({strokeColor: "#ff0000", strokeWidth: 3, strokeOpacity: 0.5});
+	var styleMapUnchanged = {color: "#0000ff", weight: 3, opacity: 0.3};
+	var styleMapCreated = {color: "#44ff44", weight: 3, opacity: 0.5};
+	var styleMapRemoved = {color: "#ff0000", weight: 3, opacity: 0.5};
 
-	var projection = new OpenLayers.Projection("EPSG:4326");
-	var layerCreated = new OpenLayers.Layer.PointTrack("(Created)", {
-		styleMap: styleMapCreated,
-		projection: projection,
-		zoomableInLayerSwitcher: true,
-		shortName: "created"
-	});
-	var layerRemoved = new OpenLayers.Layer.PointTrack("(Removed)", {
-		styleMap: styleMapRemoved,
-		projection: projection,
-		zoomableInLayerSwitcher: true,
-		shortName: "removed"
-	});
-	var layerUnchanged = new OpenLayers.Layer.PointTrack("(Unchanged)", {
-		styleMap: styleMapUnchanged,
-		projection: projection,
-		zoomableInLayerSwitcher: true,
-		shortName: "unchanged"
-	});
+	var layerCreated = new L.LayerGroup();
+	var layerRemoved = new L.LayerGroup();
+	var layerUnchanged = new L.LayerGroup();
 
-	var layerCreatedNodes = new OpenLayers.Layer.Markers("(Created Nodes)", {
-		styleMap: styleMapCreated,
-		projection: projection,
-		zoomableInLayerSwitcher: true,
-		shortName: "createdNodes"
-	});
-	var layerRemovedNodes = new OpenLayers.Layer.Markers("(Removed Nodes)", {
-		styleMap: styleMapRemoved,
-		projection: projection,
-		zoomableInLayerSwitcher: true,
-		shortName: "removedNodes"
-	});
-	var layerUnchangedNodes = new OpenLayers.Layer.Markers("(Unchanged Nodes)", {
-		styleMap: styleMapUnchanged,
-		projection: projection,
-		zoomableInLayerSwitcher: true,
-		shortName: "unchangedNodes"
-	});
-	var addNodeIcon = new OpenLayers.Icon("/img/markers/33/dark/add.png", 
-		new OpenLayers.Size(31,33), 
-		new OpenLayers.Pixel(-10, 30));
-	var modifyNodeIcon = new OpenLayers.Icon("/img/markers/33/dark/modify.png", 
-		new OpenLayers.Size(31,33), 
-		new OpenLayers.Pixel(-10, 30));
-	var removeNodeIcon = new OpenLayers.Icon("/img/markers/33/dark/remove.png", 
-		new OpenLayers.Size(31,33), 
-		new OpenLayers.Pixel(-10, 30));
+	var layerCreatedNodes = new L.LayerGroup();
+	var layerRemovedNodes = new L.LayerGroup();
+	var layerUnchangedNodes = new L.LayerGroup();
+
+	var addNodeIconClass = L.Icon.extend({
+		iconUrl: "/img/markers/33/dark/add.png", 
+		iconSize: new L.Point(31,33), 
+		iconAnchor: new L.Point(10, 30)
+		});
+	var modifyNodeIconClass = L.Icon.extend({
+		iconUrl: "/img/markers/33/dark/modify.png", 
+		iconSize: new L.Point(31,33), 
+		iconAnchor: new L.Point(10, 30)
+		});
+	var removeNodeIconClass = L.Icon.extend({
+		iconUrl: "/img/markers/33/dark/remove.png", 
+		iconSize: new L.Point(31,33), 
+		iconAnchor: new L.Point(10, 30)
+		});
+	var addNodeIcon = new addNodeIconClass();
+	var modifyNodeIcon = new modifyNodeIconClass();
+	var removeNodeIcon = new removeNodeIconClass();
+	
+
 <%
 				for(Segment segment : changes.removed)
 				{
 %>
-	layerRemoved.addNodes([new OpenLayers.Feature(layerRemoved, new OpenLayers.LonLat(<%=segment.getNode1().getLonLat().getLon()%>, <%=segment.getNode1().getLonLat().getLat()%>).transform(projection, map.getProjectionObject())),new OpenLayers.Feature(layerRemoved, new OpenLayers.LonLat(<%=segment.getNode2().getLonLat().getLon()%>, <%=segment.getNode2().getLonLat().getLat()%>).transform(projection, map.getProjectionObject()))]);
+	layerRemoved.addLayer(
+		new L.Polyline(
+			[
+				new L.LatLng(<%=segment.getNode1().getLonLat().getLat()%>, <%=segment.getNode1().getLonLat().getLon()%>),
+				new L.LatLng(<%=segment.getNode2().getLonLat().getLat()%>, <%=segment.getNode2().getLonLat().getLon()%>)
+			], styleMapRemoved
+		)
+	);
 <%
 				}
 
 				for(Segment segment : changes.created)
 				{
 %>
-	layerCreated.addNodes([new OpenLayers.Feature(layerRemoved, new OpenLayers.LonLat(<%=segment.getNode1().getLonLat().getLon()%>, <%=segment.getNode1().getLonLat().getLat()%>).transform(projection, map.getProjectionObject())),new OpenLayers.Feature(layerRemoved, new OpenLayers.LonLat(<%=segment.getNode2().getLonLat().getLon()%>, <%=segment.getNode2().getLonLat().getLat()%>).transform(projection, map.getProjectionObject()))]);
+	layerCreated.addLayer(
+		new L.Polyline(
+			[
+				new L.LatLng(<%=segment.getNode1().getLonLat().getLat()%>, <%=segment.getNode1().getLonLat().getLon()%>),
+				new L.LatLng(<%=segment.getNode2().getLonLat().getLat()%>, <%=segment.getNode2().getLonLat().getLon()%>)
+			], styleMapCreated
+		)
+	);
 <%
 				}
 
 				for(Segment segment : changes.unchanged)
 				{
 %>
-	layerUnchanged.addNodes([new OpenLayers.Feature(layerRemoved, new OpenLayers.LonLat(<%=segment.getNode1().getLonLat().getLon()%>, <%=segment.getNode1().getLonLat().getLat()%>).transform(projection, map.getProjectionObject())),new OpenLayers.Feature(layerRemoved, new OpenLayers.LonLat(<%=segment.getNode2().getLonLat().getLon()%>, <%=segment.getNode2().getLonLat().getLat()%>).transform(projection, map.getProjectionObject()))]);
+	layerUnchanged.addLayer(
+		new L.Polyline(
+			[
+				new L.LatLng(<%=segment.getNode1().getLonLat().getLat()%>, <%=segment.getNode1().getLonLat().getLon()%>),
+				new L.LatLng(<%=segment.getNode2().getLonLat().getLat()%>, <%=segment.getNode2().getLonLat().getLon()%>)
+			], styleMapUnchanged
+		)
+	);
 <%
 				}
 %>
@@ -339,9 +359,11 @@
 				for(Node node : changes.removedNodes)
 				{
 %>
-	layerRemovedNodes.addMarker(
-		new OpenLayers.LonLat(<%=node.getLonLat().getLon()%>, <%=node.getLonLat().getLat()%>).transform(projection, map.getProjectionObject()),
-		removeNodeIcon
+	layerRemovedNodes.addLayer(
+		new L.Marker(
+			new L.LatLng(<%=node.getLonLat().getLat()%>, <%=node.getLonLat().getLon()%>),
+			{icon: removeNodeIcon}
+		).bindPopup('FIXME<br><table><tbody><tr><th>source:name</th><td class="old"></td><td class="new" style="background-color:#cfc;">survey</td></tr><tr><th>source:location</th><td class="unchanged">gps</td><td class="unchanged">gps</td></tr><tr><th>source</th><td class="unchanged">survey</td><td class="unchanged">survey</td></tr><tr><th>name</th><td class="old"></td><td class="new">Porters Creek Dam</td></tr><tr><th>waterway</th><td class="unchanged">dam</td><td class="unchanged">dam</td></tr></tbody></table>')
 	);
 <%
 				}
@@ -349,9 +371,11 @@
 				for(Node node : changes.createdNodes)
 				{
 %>
-	layerCreatedNodes.addMarker(
-		new OpenLayers.LonLat(<%=node.getLonLat().getLon()%>, <%=node.getLonLat().getLat()%>).transform(projection, map.getProjectionObject()),
-		addNodeIcon
+	layerCreatedNodes.addLayer(
+		new L.Marker(
+			new L.LatLng(<%=node.getLonLat().getLat()%>, <%=node.getLonLat().getLon()%>),
+			{icon: addNodeIcon}
+		).bindPopup('FIXME<br><table><tbody><tr><th>source:name</th><td class="old"></td><td class="new" style="background-color:#cfc;">survey</td></tr><tr><th>source:location</th><td class="unchanged">gps</td><td class="unchanged">gps</td></tr><tr><th>source</th><td class="unchanged">survey</td><td class="unchanged">survey</td></tr><tr><th>name</th><td class="old"></td><td class="new">Porters Creek Dam</td></tr><tr><th>waterway</th><td class="unchanged">dam</td><td class="unchanged">dam</td></tr></tbody></table>')
 	);
 <%
 				}
@@ -359,9 +383,11 @@
 				for(Node node : changes.unchangedNodes)
 				{
 %>
-	layerUnchangedNodes.addMarker(
-		new OpenLayers.LonLat(<%=node.getLonLat().getLon()%>, <%=node.getLonLat().getLat()%>).transform(projection, map.getProjectionObject()),
-		modifyNodeIcon
+	layerUnchangedNodes.addLayer(
+		new L.Marker(
+			new L.LatLng(<%=node.getLonLat().getLat()%>, <%=node.getLonLat().getLon()%>),
+			{icon: modifyNodeIcon}
+		).bindPopup('FIXME<br><table><tbody><tr><th>source:name</th><td class="old"></td><td class="new" style="background-color:#cfc;">survey</td></tr><tr><th>source:location</th><td class="unchanged">gps</td><td class="unchanged">gps</td></tr><tr><th>source</th><td class="unchanged">survey</td><td class="unchanged">survey</td></tr><tr><th>name</th><td class="old"></td><td class="new">Porters Creek Dam</td></tr><tr><th>waterway</th><td class="unchanged">dam</td><td class="unchanged">dam</td></tr></tbody></table>')
 	);
 <%
 				}
@@ -375,33 +401,17 @@
 	map.addLayer(layerRemovedNodes);
 	map.addLayer(layerCreatedNodes);
 
-	var extent = layerCreated.getDataExtent() ||
-		layerRemoved.getDataExtent() ||
-		layerUnchanged.getDataExtent() ||
-		layerCreatedNodes.getDataExtent() ||
-		layerRemovedNodes.getDataExtent() ||
-		layerUnchangedNodes.getDataExtent();
-
-	if(extent)
-	{
-		extent.extend(layerCreated.getDataExtent());
-		extent.extend(layerRemoved.getDataExtent());
-		extent.extend(layerUnchanged.getDataExtent());
-		extent.extend(layerCreatedNodes.getDataExtent());
-		extent.extend(layerRemovedNodes.getDataExtent());
-		extent.extend(layerUnchangedNodes.getDataExtent());
-	}
-
-	if(extent)
-		map.zoomToExtent(extent);
-	else
-		map.zoomToMaxExtent();
+	//map.fitBounds(extent);
+	map.fitWorld();
 
 // ]]>
 </script>
 <%
 			}
 		}
+%>
+<p class="create-date"><%=String.format(htmlspecialchars(gui._("This page is current as of %s.")), gui.formatDate(cacheEntry == null ? null : cacheEntry.date))%></p>
+<%
 	}
 
 	gui.foot();

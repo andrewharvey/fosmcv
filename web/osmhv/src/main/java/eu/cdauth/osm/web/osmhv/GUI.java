@@ -59,8 +59,8 @@ public class GUI extends eu.cdauth.osm.web.common.GUI
 	{
 		String title = super.getTitle();
 		if(title == null)
-			return _("OSM History Viewer");
+			return _("FOSM Changeset Viewer");
 		else
-			return String.format(_("OSM History Viewer: %s"), title);
+			return String.format(_("FOSM Changeset Viewer: %s"), title);
 	}
 }

@@ -55,6 +55,7 @@ abstract public class GUI
 
 	private String m_description = null;
 	private String[] m_javaScripts = null;
+	private String[] m_styleSheets = null;
 	private String m_title = null;
 	private String m_bodyClass = null;
 
@@ -195,6 +196,26 @@ abstract public class GUI
 		if(m_javaScripts == null)
 			return new String[]{ };
 		return m_javaScripts;
+	}
+
+	/**
+	 * Sets the list of CSS URLs that will be included in the HTML page as &lt;link&gt; elements.
+	 * @param a_styleSheets A list of URLs to be included as CSS.
+	 */
+	public void setStyleSheets(String[] a_styleSheets)
+	{
+		m_styleSheets = a_styleSheets;
+	}
+
+	/**
+	 * Returns the list of JavaScript URLs that will be included in the HTML page.
+	 * @return A list of URLs or null.
+	 */
+	public String[] getStyleSheets()
+	{
+		if(m_styleSheets == null)
+			return new String[]{ };
+		return m_styleSheets;
 	}
 
 	/**
@@ -532,6 +553,9 @@ abstract public class GUI
 		
 		out.println("\t\t<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />");
 
+		for(String styleSheet : getStyleSheets())
+			out.println("\t\t<link rel=\"stylesheet\" href=\""+htmlspecialchars(styleSheet)+"\" type=\"text/css\" />");
+
 		for(String javaScript : getJavaScripts())
 			out.println("\t\t<script type=\"text/javascript\" src=\""+htmlspecialchars(javaScript)+"\"></script>");
 		
@@ -543,7 +567,7 @@ abstract public class GUI
 		else
 			bodyClass = " class=\""+htmlspecialchars(bodyClass)+"\"";
 		out.println("\t<body"+bodyClass+">");
-		out.println("\t\t<h1>"+htmlspecialchars(getTitle())+"</h1>");
+		out.println("\t\t<h1>FOSM Changeset Viewer</h1>");
 		
 		StringBuilder urlB = new StringBuilder("?");
 		Enumeration<String> params = m_req.getParameterNames();
@@ -583,8 +607,28 @@ abstract public class GUI
 	{
 		PrintWriter out = m_resp.getWriter();
 		out.println("\t\t\t<hr />");
-		out.println("\t\t\t<p>All geographic data by <a href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and <a href=\"http://www.fosm.org/\">fosm</a>, available under <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a>.</p>");
-		out.println("\t\t\t<p>This program is free software: you can redistribute it and/or modify it under the terms of the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Get the source code via <a href=\"https://github.com/andrewharvey/fosmhv\">Git</a>.</p>");
+		out.println("\t\t\t<div xmlns:cc=\"http://creativecommons.org/ns#\">");
+		out.println("\t\t\t\t<table class=\"footer-copyright\">");
+		out.println("\t\t\t\t\t<tbody>");
+		out.println("\t\t\t\t\t\t<tr>");
+		out.println("\t\t\t\t\t\t\t<td>");
+		out.println("\t\t\t\t\t\t\t\t<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">");
+		out.println("\t\t\t\t\t\t\t\t\t<img width=\"88\" height=\"31\" src=\"http://i.creativecommons.org/l/by-sa/2.0/88x31.png\" alt=\"CC BY-SA 2.0\"/>");
+		out.println("\t\t\t\t\t\t\t\t</a>");
+		out.println("\t\t\t\t\t\t\t</td>");
+		out.println("\t\t\t\t\t\t\t<td>This report and all data presented in this report is by <a property=\"cc:attributionName\" rel=\"cc:attributionURL\" href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and <a property=\"cc:attributionName\" rel=\"cc:attributionURL\" href=\"http://www.fosm.org/\">fosm</a> contributors, made available under the <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">cc-by-sa-2.0</a> license.</td>");
+		out.println("\t\t\t\t\t\t</tr>");
+		out.println("\t\t\t\t\t\t<tr>");
+		out.println("\t\t\t\t\t\t\t<td>");
+		out.println("\t\t\t\t\t\t\t\t<a rel=\"license\" href=\"http://www.gnu.org/licenses/agpl.html\">");
+		out.println("\t\t\t\t\t\t\t\t\t<img width=\"88\" height=\"31\" src=\"http://www.gnu.org/graphics/agplv3-88x31.png\" alt=\"GNU AGPL\"/>");
+		out.println("\t\t\t\t\t\t\t\t</a>");
+		out.println("\t\t\t\t\t\t\t</td>");
+		out.println("\t\t\t\t\t\t\t<td>This report was generated using <a href=\"https://github.com/andrewharvey/fosmhv\">fosmhv</a>, which is free software: you can redistribute it and/or modify it under the terms of the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</td>");
+		out.println("\t\t\t\t\t\t</tr>");
+		out.println("\t\t\t\t\t</tbody>");
+		out.println("\t\t\t\t</table>");
+		out.println("\t\t\t</div>");
 		out.println("\t</body>");
 		out.println("</html>");
 	}

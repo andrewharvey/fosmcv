@@ -18,7 +18,7 @@
 	or svn://svn.cdauth.de/tools/osm/route-manager/.
 */
 
-body { line-height:1.4em; background:#fff; color:#000; }
+body { background:#fff; color:#000; }
 
 dt { margin:0; padding:0; float:left; font-weight:bold; font-style:normal; clear:left; }
 dt:after { content:": "; }
@@ -39,11 +39,14 @@ ul.buttons { margin:0; padding:0; list-style-type:none; }
 ul.buttons li { display:inline; }
 
 h1,h2,h3,h4,h5,h6 { clear:left; }
+h1 { text-align:center; }
 
-#switch-lang { margin:0; padding:.3em; position:absolute; top:0; right:0; list-style-type:none; }
+#switch-lang { margin:0; padding:.3em; position:absolute; top:0; right:0; list-style-type:none; display:none }
 #switch-lang li { margin:0; padding:0; }
 
-.changed-object-tags li table { display:block; }
+.changed-object-tags { line-height:1.5em; } /* affects space between Way ... and table below */
+.changed-object-tags li table { display:block; line-height:1.2em; } /* vertical spacing within table */
+.changed-object-tags li { margin-bottom:20px; } /* affects how much space to drop below table */
 * html .changed-object-tags li table { display:block; }
 .changed-object-tags li:hover table { display:table; }
 * html .changed-object-tags-note { display:block; }
@@ -55,3 +58,16 @@ h1,h2,h3,h4,h5,h6 { clear:left; }
 .user-colour a { color:inherit; }
 
 p.scheduled,.error { font-size:1.2em; background-color:#fcc; padding:.2em .5em; }
+
+.created-date { font-size:small; }
+.footer-copyright td { font-size:small; border-style:none; padding-bottom:15px; }
+
+.green { color:green; }
+.red { color:#ff0000; }
+.blue { color:#0000ff; }
+
+.key { text-align:right;}
+
+.object-links { font-size:small; }
+
+.details { line-height:1.4em; }
