@@ -10,9 +10,9 @@
 	<version>SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>fosmhv</name>
-	<description>fosmhv library</description>
-	<url>https://github.com/andrewharvey/fosmhv</url>
+	<name>fosmcv</name>
+	<description>fosm changeset viewer</description>
+	<url>https://github.com/andrewharvey/fosmcv</url>
 
 	<licenses>
 		<license>
@@ -39,9 +39,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/andrewharvey/fosmhv.git</connection>
-		<developerConnection>scm:git:git@github.com:andrewharvey/fosmhv.git</developerConnection>
-		<url>http://github.com/andrewharvey/fosmhv</url>
+		<connection>scm:git:git://github.com/andrewharvey/fosmcv.git</connection>
+		<developerConnection>scm:git:git@github.com:andrewharvey/fosmcv.git</developerConnection>
+		<url>http://github.com/andrewharvey/fosmcv</url>
 	</scm>
 
 	<properties>

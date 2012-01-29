@@ -536,8 +536,9 @@ abstract public class GUI
 		out.println("\talong with this software.  If not, see <http://www.gnu.org/licenses/>.");
 		out.println("");
 		out.println("\tCopyright © 2010 Candid Dauth");
+		out.println("\t            2012 Andrew Harvey");
 		out.println("");
-		out.println("\tObtain the source code from https://github.com/andrewharvey/fosmhv (which was modified from http://gitorious.org/osmrmhv).");
+		out.println("\tObtain the source code from https://github.com/andrewharvey/fosmcv (which is a fork of http://gitorious.org/osmrmhv).");
 		out.println("-->");
 		out.println("\t<head>");
 		out.println("\t\t<title>"+htmlspecialchars(getTitle())+"</title>");
@@ -624,7 +625,7 @@ abstract public class GUI
 		out.println("\t\t\t\t\t\t\t\t\t<img width=\"88\" height=\"31\" src=\"http://www.gnu.org/graphics/agplv3-88x31.png\" alt=\"GNU AGPL\"/>");
 		out.println("\t\t\t\t\t\t\t\t</a>");
 		out.println("\t\t\t\t\t\t\t</td>");
-		out.println("\t\t\t\t\t\t\t<td>This report was generated using <a href=\"https://github.com/andrewharvey/fosmhv\">fosmhv</a>, which is free software: you can redistribute it and/or modify it under the terms of the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</td>");
+		out.println("\t\t\t\t\t\t\t<td>This report was generated using <a href=\"https://github.com/andrewharvey/fosmcv\">fosmcv</a>, which is free software: you can redistribute it and/or modify it under the terms of the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</td>");
 		out.println("\t\t\t\t\t\t</tr>");
 		out.println("\t\t\t\t\t</tbody>");
 		out.println("\t\t\t\t</table>");
