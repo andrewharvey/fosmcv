@@ -165,7 +165,6 @@
 			else
 			{
 %>
-<p class="changed-object-tags-note"><%=htmlspecialchars(gui._("Hover the elements to view the changed tags."))%></p>
 <ul class="changed-object-tags">
 <%
 				for(ChangesetAnalyser.TagChange it : changes.tagChanges)
