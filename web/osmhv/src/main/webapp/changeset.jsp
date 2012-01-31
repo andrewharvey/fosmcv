@@ -31,7 +31,7 @@
 	public void jspInit()
 	{
 		if(ChangesetAnalyser.cache == null)
-			ChangesetAnalyser.cache = new Cache<ChangesetAnalyser>(GUI.getCacheDirectory(getServletContext())+"/osmhv/changeset");
+			ChangesetAnalyser.cache = new Cache<ChangesetAnalyser>(GUI.getCacheDirectory(getServletContext())+"/fosmcv/changeset");
 	}
 %>
 <%
