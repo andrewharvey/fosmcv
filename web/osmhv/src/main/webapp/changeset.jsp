@@ -64,7 +64,6 @@
 
 	gui.head();
 %>
-<noscript><p><strong><%=htmlspecialchars(gui._("Note that many features of this page will not work without JavaScript."))%></strong></p></noscript>
 <%
 	response.getWriter().flush();
 
@@ -233,6 +232,7 @@
 			}
 %>
 <h2><%=htmlspecialchars(gui._("Map"))%></h2>
+<noscript><p><strong><%=htmlspecialchars(gui._("This map requires JavaScript."))%></strong></p></noscript>
 <%
 			if(changes.removed.length == 0 && changes.created.length == 0 && changes.unchanged.length == 0)
 			{
