@@ -149,39 +149,53 @@
 			}
 %>
 </dl>
+<%
+			for(TagChange[] tagChangeObject : {changes.tagChanges, changes.tagChangesNewObjects, changes.tagChangesDeletedObjects}) {
+				if(tagChangeObject == changes.tagChanges) {
+%>
 <h2><%=htmlspecialchars(gui._("Changed object tags"))%></h2>
 <%
-			if(changes.tagChanges.length == 0)
-			{
+				}else if(tagChangeObject == changes.tagChangesNewObjects) {
+%>
+<h2><%=htmlspecialchars(gui._("New object tags"))%></h2>
+<%
+				}else if(tagChangeObject == changes.tagChangesNewObjects) {
+%>
+<h2><%=htmlspecialchars(gui._("Deleted object tags"))%></h2>
+<%
+				}
+
+				if(tagChangeObject.length == 0)
+				{
 %>
 <p class="nothing-to-do"><%=htmlspecialchars(gui._("No tags have been changed."))%></p>
 <%
-			}
-			else
-			{
+				}
+				else
+				{
 %>
 <ul class="changed-object-tags">
 <%
-				for(ChangesetAnalyser.TagChange it : changes.tagChanges)
-				{
-					String type,browse;
-					if(it.type == Node.class)
+					for(ChangesetAnalyser.TagChange it : tagChangeObject)
 					{
-						type = gui._("Node");
-						browse = "node";
-					}
-					else if(it.type == Way.class)
-					{
-						type = gui._("Way");
-						browse = "way";
-					}
-					else if(it.type == Relation.class)
-					{
-						type = gui._("Relation");
-						browse = "relation";
-					}
-					else
-						continue;
+						String type,browse;
+						if(it.type == Node.class)
+						{
+							type = gui._("Node");
+							browse = "node";
+						}
+						else if(it.type == Way.class)
+						{
+							type = gui._("Way");
+							browse = "way";
+						}
+						else if(it.type == Relation.class)
+						{
+							type = gui._("Relation");
+							browse = "relation";
+						}
+						else
+							continue;
 %>
 	<li><%=htmlspecialchars(type+" "+it.id.toString())%>
 	    <span class="object-links">
@@ -192,31 +206,31 @@
 		<table>
 			<tbody>
 <%
-					Set<String> tags = new HashSet<String>();
-					tags.addAll(it.oldTags.keySet());
-					tags.addAll(it.newTags.keySet());
-
-					for(String key : tags)
-					{
-						String valueOld = it.oldTags.get(key);
-						String valueNew = it.newTags.get(key);
-
-						if(valueOld == null)
-							valueOld = "";
-						if(valueNew == null)
-							valueNew = "";
-
-						String class1,class2;
-						if(valueOld.equals(valueNew))
+						Set<String> tags = new HashSet<String>();
+						tags.addAll(it.oldTags.keySet());
+						tags.addAll(it.newTags.keySet());
+	
+						for(String key : tags)
 						{
-							class1 = "unchanged";
-							class2 = "unchanged";
-						}
-						else
-						{
-							class1 = "old";
-							class2 = "new";
-						}
+							String valueOld = it.oldTags.get(key);
+							String valueNew = it.newTags.get(key);
+	
+							if(valueOld == null)
+								valueOld = "";
+							if(valueNew == null)
+								valueNew = "";
+	
+							String class1,class2;
+							if(valueOld.equals(valueNew))
+							{
+								class1 = "unchanged";
+								class2 = "unchanged";
+							}
+							else
+							{
+								class1 = "old";
+								class2 = "new";
+							}
 %>
 				<tr>
 					<th><%=htmlspecialchars(key)%></th>
@@ -224,16 +238,17 @@
 					<td class="<%=htmlspecialchars(class2)%>"><%=GUI.formatTag(key, valueNew)%></td>
 				</tr>
 <%
-					}
+						}
 %>
 			</tbody>
 		</table>
 	</li>
 <%
-				}
+					}
 %>
 </ul>
 <%
+				}
 			}
 %>
 <h2><%=htmlspecialchars(gui._("Map"))%></h2>

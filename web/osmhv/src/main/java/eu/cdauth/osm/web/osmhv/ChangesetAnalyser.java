@@ -65,17 +65,30 @@ public class ChangesetAnalyser implements Serializable
 		}
 	};
 
+	/* segments are formed by splitting a way at each node */
 	public Segment[] removed = null;
 	public Segment[] created = null;
 	public Segment[] unchanged = null;
 
+	/* nodes which were deleted */
 	public Node[] removedNodes = null;
+	
+	/* new nodes */
 	public Node[] createdNodes = null;
+	
+	/* nodes which were modified, ie. moved or change of tags */
 	public Node[] unchangedNodes = null;
 
+	
 	public Changeset changeset = null;
 
 	public TagChange[] tagChanges = null;
+	
+	// tag changes for new objects
+	public TagChange[] tagChangesNewObjects = null;
+	
+	//tag changes for deleted objects
+	public TagChange[] tagChangesDeletedObjects = null;
 
 	public Throwable exception = null;
 
@@ -144,16 +157,44 @@ public class ChangesetAnalyser implements Serializable
 			Hashtable<ID,Node> nodesAdded = new Hashtable<ID,Node>(); // All created nodes and the new versions of all moved nodes
 			Hashtable<ID,Node> nodesChanged = new Hashtable<ID,Node>(); // Only the new versions of all moved nodes
 
+			tagChangesDeletedObjects = new TagChange[changeset.getMemberObjects(Changeset.ChangeType.delete).length];
+			i = 0;
 			for(VersionedItem obj : changeset.getMemberObjects(Changeset.ChangeType.delete))
 			{
 				if(obj instanceof Node)
 					nodesRemoved.put(obj.getID(), (Node) obj);
+				
+				Class<? extends GeographicalItem> type;
+				if (obj instanceof Node)
+					type = Node.class;
+				else if (obj instanceof Way)
+					type = Way.class;
+				else if (obj instanceof Relation)
+					type = Relation.class;
+				else
+					continue;
+				
+				tagChangesDeletedObjects[i++] = new TagChange(obj.getID(), type, obj.getTags(), null);
 			}
 
+			tagChangesNewObjects = new TagChange[changeset.getMemberObjects(Changeset.ChangeType.create).length];
+			i = 0;
 			for(VersionedItem obj : changeset.getMemberObjects(Changeset.ChangeType.create))
 			{
 				if(obj instanceof Node)
 					nodesAdded.put(obj.getID(), (Node) obj);
+				
+				Class<? extends GeographicalItem> type;
+				if (obj instanceof Node)
+					type = Node.class;
+				else if (obj instanceof Way)
+					type = Way.class;
+				else if (obj instanceof Relation)
+					type = Relation.class;
+				else
+					continue;
+				
+				tagChangesNewObjects[i++] = new TagChange(obj.getID(), type, null, obj.getTags());
 			}
 
 			for(VersionedItem obj : changeset.getMemberObjects(Changeset.ChangeType.modify))
