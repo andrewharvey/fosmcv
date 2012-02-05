@@ -258,7 +258,7 @@
 	</ul>
 	</strong>
 </p>
-<span><a href="/leaflet-side-by-side.html">Inspect fosm/osm as a side-by-side map.</a></span>
+<span><a id="map-side-by-side" href="/leaflet-side-by-side.html">Inspect fosm/osm as a side-by-side map.</a></span>
 <script type="text/javascript">
 // <![CDATA[
 	var map = new L.Map("map");
