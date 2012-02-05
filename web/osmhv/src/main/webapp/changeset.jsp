@@ -109,7 +109,7 @@
 <h2><%=htmlspecialchars(gui._("Changeset Details"))%></h2>
 <dl class="details">
 	<dt>ID</dt>
-	<dd><%=htmlspecialchars(changesetID.toString())%> <span class="object-links">(<a href="http://api.fosm.org/api/0.6/changeset/<%=htmlspecialchars(changesetID.toString())%>">head</a>)</span> <span class="object-links">(<a href="http://api.fosm.org/api/0.6/changeset/<%=htmlspecialchars(changesetID.toString())%>/download">download</a></span></dd>
+	<dd><%=htmlspecialchars(changesetID.toString())%> <span class="object-links">(<a href="http://api.fosm.org/api/0.6/changeset/<%=htmlspecialchars(changesetID.toString())%>">head</a>)</span> <span class="object-links">(<a href="http://api.fosm.org/api/0.6/changeset/<%=htmlspecialchars(changesetID.toString())%>/download">download</a>)</span></dd>
 	<dt><%=htmlspecialchars(gui._("User"))%></dt>
 	<dd><a href="http://www.openstreetmap.org/user/<%=htmlspecialchars(urlencode(changes.changeset.getUser().toString()))%>"><%=htmlspecialchars(changes.changeset.getUser().toString())%></a></dd>
 	<dt><%=htmlspecialchars(gui._("Creation time"))%></dt>
