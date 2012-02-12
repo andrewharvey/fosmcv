@@ -19,6 +19,7 @@
 <%@page import="java.io.PrintWriter"%>
 <%@page import="eu.cdauth.osm.lib.*"%>
 <%@page import="eu.cdauth.osm.web.osmhv.*"%>
+<%@page import="eu.cdauth.osm.web.osmhv.ChangesetAnalyser.TagChange"%>
 <%@page import="static eu.cdauth.osm.web.osmhv.GUI.*"%>
 <%@page import="eu.cdauth.osm.web.common.Cache"%>
 <%@page import="eu.cdauth.osm.web.common.Queue"%>
@@ -150,16 +151,29 @@
 %>
 </dl>
 <%
-			for(TagChange[] tagChangeObject : {changes.tagChanges, changes.tagChangesNewObjects, changes.tagChangesDeletedObjects}) {
-				if(tagChangeObject == changes.tagChanges) {
+			// for(TagChange[] tagChangeObject : {changes.tagChanges, changes.tagChangesNewObjects, changes.tagChangesDeletedObjects})
+
+			ArrayList<TagChange[]> tagChangeObjects = new ArrayList<TagChange[]>();
+			tagChangeObjects.add(changes.tagChanges);
+			tagChangeObjects.add(changes.tagChangesNewObjects);
+			tagChangeObjects.add(changes.tagChangesDeletedObjects);
+			
+			for(TagChange[] tagChangeObject : tagChangeObjects)
+			{
+				if(tagChangeObject == changes.tagChanges)
+				{
 %>
 <h2><%=htmlspecialchars(gui._("Changed object tags"))%></h2>
 <%
-				}else if(tagChangeObject == changes.tagChangesNewObjects) {
+				}
+				else if(tagChangeObject == changes.tagChangesNewObjects)
+				{
 %>
 <h2><%=htmlspecialchars(gui._("New object tags"))%></h2>
 <%
-				}else if(tagChangeObject == changes.tagChangesNewObjects) {
+				}
+				else if(tagChangeObject == changes.tagChangesNewObjects)
+				{
 %>
 <h2><%=htmlspecialchars(gui._("Deleted object tags"))%></h2>
 <%
