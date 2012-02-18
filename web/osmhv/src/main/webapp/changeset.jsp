@@ -433,7 +433,7 @@
 		new L.Marker(
 			new L.LatLng(<%=node.getLonLat().getLat()%>, <%=node.getLonLat().getLon()%>),
 			{icon: removeNodeIcon}
-		).bindPopup('FIXME<br><table><tbody><tr><th>source:name</th><td class="old"></td><td class="new" style="background-color:#cfc;">survey</td></tr><tr><th>source:location</th><td class="unchanged">gps</td><td class="unchanged">gps</td></tr><tr><th>source</th><td class="unchanged">survey</td><td class="unchanged">survey</td></tr><tr><th>name</th><td class="old"></td><td class="new">Porters Creek Dam</td></tr><tr><th>waterway</th><td class="unchanged">dam</td><td class="unchanged">dam</td></tr></tbody></table>')
+		).bindPopup('Node ID: <%=node.getID()%><br><a href="/cgi-bin/fosm-deep-history/node.php?id=<%=node.getID()%>">deep diff</a>')
 	);
 <%
 				}
@@ -445,7 +445,7 @@
 		new L.Marker(
 			new L.LatLng(<%=node.getLonLat().getLat()%>, <%=node.getLonLat().getLon()%>),
 			{icon: addNodeIcon}
-		).bindPopup('FIXME<br><table><tbody><tr><th>source:name</th><td class="old"></td><td class="new" style="background-color:#cfc;">survey</td></tr><tr><th>source:location</th><td class="unchanged">gps</td><td class="unchanged">gps</td></tr><tr><th>source</th><td class="unchanged">survey</td><td class="unchanged">survey</td></tr><tr><th>name</th><td class="old"></td><td class="new">Porters Creek Dam</td></tr><tr><th>waterway</th><td class="unchanged">dam</td><td class="unchanged">dam</td></tr></tbody></table>')
+		).bindPopup('Node ID: <%=node.getID()%><br><a href="/cgi-bin/fosm-deep-history/node.php?id=<%=node.getID()%>">deep diff</a>')
 	);
 <%
 				}
@@ -457,7 +457,7 @@
 		new L.Marker(
 			new L.LatLng(<%=node.getLonLat().getLat()%>, <%=node.getLonLat().getLon()%>),
 			{icon: modifyNodeIcon}
-		).bindPopup('FIXME<br><table><tbody><tr><th>source:name</th><td class="old"></td><td class="new" style="background-color:#cfc;">survey</td></tr><tr><th>source:location</th><td class="unchanged">gps</td><td class="unchanged">gps</td></tr><tr><th>source</th><td class="unchanged">survey</td><td class="unchanged">survey</td></tr><tr><th>name</th><td class="old"></td><td class="new">Porters Creek Dam</td></tr><tr><th>waterway</th><td class="unchanged">dam</td><td class="unchanged">dam</td></tr></tbody></table>')
+		).bindPopup('Node ID: <%=node.getID()%><br><a href="/cgi-bin/fosm-deep-history/node.php?id=<%=node.getID()%>">deep diff</a>')
 	);
 <%
 				}
