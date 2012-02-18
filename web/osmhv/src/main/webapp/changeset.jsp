@@ -229,7 +229,7 @@
 	    <span class="object-links">
 	        (<a href="http://www.openstreetmap.org/browse/<%=htmlspecialchars(browse + "/" + it.id.toString())%>"><%=htmlspecialchars(gui._("browse"))%></a>) 
 	        (<a href="/cgi-bin/fosm-deep-history/<%=htmlspecialchars(browse)%>.php?id=<%=htmlspecialchars(it.id.toString())%>"><%=htmlspecialchars(gui._("deep diff"))%></a>) 
-	        (<a href="http://<%=htmlspecialchars("http://api.fosm.org/api/0.6/" + browse + "/" + it.id.toString() + "/history")%>"><%=htmlspecialchars(gui._("api history"))%></a>) 
+	        (<a href="http://api.fosm.org/api/0.6/<%=htmlspecialchars(browse + "/" + it.id.toString() + "/history")%>"><%=htmlspecialchars(gui._("api history"))%></a>) 
 	        (<a href="javascript:gotomap('<%=htmlspecialchars(browse + "/" + it.id.toString())%>')"><%=htmlspecialchars(gui._("gotomap"))%></a>)
 	    </span>
 		<table>
