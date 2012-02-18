@@ -29,6 +29,10 @@
 <%!
 	private static final Queue queue = Queue.getInstance();
 
+	private static final int TAG_CHANGES_CHANGED = 0;
+	private static final int TAG_CHANGES_CREATED = 1;
+	private static final int TAG_CHANGES_DELETED = 2;
+
 	public void jspInit()
 	{
 		if(ChangesetAnalyser.cache == null)
@@ -151,33 +155,43 @@
 %>
 </dl>
 <%
-			// for(TagChange[] tagChangeObject : {changes.tagChanges, changes.tagChangesNewObjects, changes.tagChangesDeletedObjects})
-
-			ArrayList<TagChange[]> tagChangeObjects = new ArrayList<TagChange[]>();
-			tagChangeObjects.add(changes.tagChanges);
-			tagChangeObjects.add(changes.tagChangesNewObjects);
-			tagChangeObjects.add(changes.tagChangesDeletedObjects);
+			TagChange[] tagChangeObject = null;
 			
-			for(TagChange[] tagChangeObject : tagChangeObjects)
+			for(int tagChangeObjectType = 0; tagChangeObjectType < 3 ; tagChangeObjectType++)
 			{
-				if(tagChangeObject == changes.tagChanges)
+				if(tagChangeObjectType == 0)
 				{
 %>
 <h2><%=htmlspecialchars(gui._("Changed object tags"))%></h2>
 <%
 				}
-				else if(tagChangeObject == changes.tagChangesNewObjects)
+				else if(tagChangeObjectType == 1)
 				{
 %>
 <h2><%=htmlspecialchars(gui._("New object tags"))%></h2>
 <%
 				}
-				else if(tagChangeObject == changes.tagChangesNewObjects)
+				else if(tagChangeObjectType == 2)
 				{
 %>
 <h2><%=htmlspecialchars(gui._("Deleted object tags"))%></h2>
 <%
 				}
+
+					switch (tagChangeObjectType) {
+						case TAG_CHANGES_CHANGED:
+							tagChangeObject = changes.tagChanges;
+							break;
+						case TAG_CHANGES_CREATED:
+							tagChangeObject = changes.tagChangesNewObjects;
+							break;
+						case TAG_CHANGES_DELETED:
+							tagChangeObject = changes.tagChangesDeletedObjects;
+							break;
+						default: // shouldn't happen
+							tagChangeObject = changes.tagChanges;
+							break;
+					}
 
 				if(tagChangeObject.length == 0)
 				{
@@ -222,13 +236,26 @@
 			<tbody>
 <%
 						Set<String> tags = new HashSet<String>();
-						tags.addAll(it.oldTags.keySet());
-						tags.addAll(it.newTags.keySet());
+
+						if ((tagChangeObjectType == TAG_CHANGES_CHANGED) ||
+						    (tagChangeObjectType == TAG_CHANGES_DELETED))
+							tags.addAll(it.oldTags.keySet());
+						if ((tagChangeObjectType == TAG_CHANGES_CHANGED) ||
+						    (tagChangeObjectType == TAG_CHANGES_CREATED))
+							tags.addAll(it.newTags.keySet());
 	
 						for(String key : tags)
 						{
-							String valueOld = it.oldTags.get(key);
-							String valueNew = it.newTags.get(key);
+							String valueOld = null;
+
+							if ((tagChangeObjectType == TAG_CHANGES_CHANGED) ||
+							    (tagChangeObjectType == TAG_CHANGES_DELETED))
+								valueOld = it.oldTags.get(key);
+
+							String valueNew = null;
+						if ((tagChangeObjectType == TAG_CHANGES_CHANGED) ||
+						    (tagChangeObjectType == TAG_CHANGES_CREATED))
+								valueNew = it.newTags.get(key);
 	
 							if(valueOld == null)
 								valueOld = "";
