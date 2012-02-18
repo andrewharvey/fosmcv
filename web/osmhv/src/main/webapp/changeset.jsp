@@ -318,20 +318,33 @@
 <span><a id="map-side-by-side" href="/leaflet-side-by-side.html">Inspect fosm/osm as a side-by-side map.</a></span>
 <script type="text/javascript">
 // <![CDATA[
-	var map = new L.Map("map");
-
 	var fosm = new L.TileLayer("/tiles/fosm/mapnik/{z}/{x}/{y}.png",
 		{
 			attribution: 'Map Data &amp; Map Image &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> &amp; <a href="http://www.fosm.org/">FOSM</a> Contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>',
 			maxZoom: 20
 		});
-	map.addLayer(fosm);
+
+	var nearmap = new L.TileLayer("http://www.nearmap.com/maps/?z={z}&x={x}&y={y}&nml=Vert",
+		{
+			attribution: 'PhotoMaps &copy; <a href="http://www.nearmap.com/">NearMap</a>',
+			maxZoom: 24
+		});
 
 	var osm = new L.TileLayer("http://tile.openstreetmap.org/{z}/{x}/{y}.png",
 		{
 			attribution: 'Map Data &amp; Map Image &copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a> Contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a>',
-			maxZoom: 28
+			maxZoom: 18
 		});
+
+	// define the layer control
+	var layerControl = new L.Control.Layers({
+		'FOSM Mapnik': fosm,
+		'NearMap PhotoMap (remote)': nearmap,
+		'OpenStreetMap.org (remote)': osm
+	});
+
+	var map = new L.Map("map", { layers: [fosm] });
+	map.addControl(layerControl);
 
 //	window.onresize = function(){ document.getElementById("map").style.height = Math.round(window.innerHeight*.9)+"px"; map.updateSize(); };
 //	window.onresize();
